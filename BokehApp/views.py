@@ -47,6 +47,7 @@ from bokeh.transform import factor_cmap, factor_mark
 from bokeh.embed import components
 from django.shortcuts import render
 from django.http import HttpResponse
+from bokeh.layouts import gridplot
 
 
 from bokeh.io import output_file, show
@@ -70,41 +71,6 @@ from bokeh.util.hex import hexbin
 
 from bokeh.layouts import gridplot
 
-'''def home (request):
-
-        x = standard_normal(50000)
-        y = standard_normal(50000)
-
-        bins = hexbin(x, y, 0.1)
-        #plot1
-        p1 = figure(tools="", match_aspect=True, background_fill_color='#440154')
-        p1.grid.visible = False
-
-        p1.hex_tile(q="q", r="r", size=0.1, line_color=None, source=bins,
-                fill_color=linear_cmap('counts', 'Viridis256', 0, max(bins.counts)))
-
-       # plot2
-        N = 4000
-        x = np.random.random(size=N) * 100
-        y = np.random.random(size=N) * 100
-        radii = np.random.random(size=N) * 1.5
-        colors = np.array([(r, g, 150) for r, g in zip(50+2*x, 30+2*y)], dtype="uint8")
-
-        TOOLS="hover,crosshair,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,undo,redo,reset,tap,save,box_select,poly_select,lasso_select,examine,help"
-
-        p2 = figure(tools=TOOLS)
-
-        p2.circle(x, y, radius=radii,
-               line_color=None)
-
-       # plots = {'p1': p1,'p2':p2}
-      # grid = gridplot[[p1, p2]]
-
-      #  script, div = components(grid)
-       # div1 = div['p1']
-       # div2 = div['p2']
-
-        return render(request, 'base.html')'''
 def home(request):
         from bokeh.layouts import row
         from bokeh.plotting import figure, show
@@ -123,7 +89,9 @@ def home(request):
 
         s3 = figure(width=250, height=250, background_fill_color="#fafafa")
         s3.square(x, y2, size=12, color="#d95b43", alpha=0.8)
-#row2 
+
+        # put the results in a row and show
+#row2   
         s4 = figure(width=250, height=250, background_fill_color="#fafafa")
         s4.circle(x, y0, size=12, color="#53777a", alpha=0.8)
 
@@ -135,20 +103,25 @@ def home(request):
 #row3
         s7 = figure(width=250, height=250, background_fill_color="#fafafa")
         s7.square(x, y2, size=12, color="#d95b43", alpha=0.8)
+#
+       # s7 = figure(width=250, height=250, background_fill_color="#fafafa")
+      #  s7.circle(x, y0, size=12, color="#53777a", alpha=0.8)
 
-        s7 = figure(width=250, height=250, background_fill_color="#fafafa")
-        s7.circle(x, y0, size=12, color="#53777a", alpha=0.8)
+        #s8 = figure(width=250, height=250, background_fill_color="#fafafa")
+        #s8.triangle(x, y1, size=12, color="#c02942", alpha=0.8)
 
-        s8 = figure(width=250, height=250, background_fill_color="#fafafa")
-        s8.triangle(x, y1, size=12, color="#c02942", alpha=0.8)
+       # s9 = figure(width=250, height=250, background_fill_color="#fafafa")
+      #  s9.square(x, y2, size=12, color="#d95b43", alpha=0.8)
 
-        s9 = figure(width=250, height=250, background_fill_color="#fafafa")
-        s9.square(x, y2, size=12, color="#d95b43", alpha=0.8)
+       # grid = gridplot([s1,s2,s3,s4,s5,s6,s7,s8,s9])
+        #grid = show(gridplot([s1,s2,s3]))
+        grid1 = gridplot([[s1,s2,s3], [s4,s5,s6,s7]])
+        #script, div = components(grid)
+        script, div = components(grid1)
 
-        grid = gridplot([s1,s2,s3,s4,s5,s6,s7,s8,s9])
+   
+        #div1 = script
 
-        script, div = components(gridplot)
-        div1 = grid
 
         # put the results in a row and show
        # show(row(s1, s2, s3))
@@ -160,5 +133,9 @@ def home(request):
         ##div1 = plots_1
         #div2 = plots_2
         #div3 = plots_3
+        context = {
+                'script': script,
+                'div': div
+        }
 
-        return render(request, 'base.html')
+        return render(request, 'base.html', context=context)

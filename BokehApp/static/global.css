@@ -1,0 +1,12 @@
+.row {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  gap: 25px 25px;
+  margin-top: 25px;
+  padding: 25px;
+}
+
+background {
+    background-color:rgb(0, 150, 255, 0.6);
+}
