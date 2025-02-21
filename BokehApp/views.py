@@ -1,95 +1,60 @@
-'''import bokeh
-from django.shortcuts import render
-from django.http import HttpResponse
-from bokeh.plotting import figure, show 
-#from bokeh.embed import components4
-
-#other libraries
-from numpy.random import standard_normal
-from bokeh.transform import linear_cmap
-from bokeh.util.hex import hexbin
-from bokeh.models import LogColorMapper
-
-# Create your views here.
-#this is the file where you can actually make your graphs!!!!
-
-def home(request): # want to make a 3x3 grid 
-#better to store it in plot to easily wrap in the components
- ##### first row
- ##
- 
-    # first graph
-    plot = figure(plot_width=600, plot_height=600)
+import holoviews as hv
+import numpy as np 
+import pandas as pd
+hv.extension('bokeh')
+#non-bokeh
+from random import random 
+from itertools import combinations
 
 
-# second graph
-x = standard_normal (50000)
-y = standard_normal(5000)
-
-bins = hexbin(x,y,0.1)
-p = figure(tools='', match_aspect=True, background_fill_color='8000080')
-p.grid.visible = False
-
-p.hex_tile(q='q', r='r', size=0.1, line_color=None, source=bins, 
-           fill_color=linear_cmap('counts', 'Plasma')) #wanna change out the colormaps'''
-
-# third graph
-''' def normal2d(X,Y, sigx=1.0, sigy=1.0, mux=0.0, muy=0.0):
-        z=(x-mux)**2 / sigx**2 + (Y-muy)**2 / sigy**2
-        return np.exp(-z/2) / (2*np.pi * sigx * sigy)
-X, Y = np.mgrid[-3,3:200j, -2:2:200j]
-Z = normal2d(X, Y, 0.1,0.2,1.0,1.0) + 0.1* normal2d(X,Y, 1.0, 1.0)
-image = Z
-  #GnBu'''
-
+#plotting 
 from bokeh.plotting import figure, show
 from bokeh.transform import factor_cmap, factor_mark
 from bokeh.embed import components
 from django.shortcuts import render
 from django.http import HttpResponse
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, FixedTicker
 from bokeh.models import Whisker
 from bokeh.sampledata.autompg2 import autompg2 as df
 from bokeh.transform import factor_cmap, jitter
-from bokeh.plotting import GnBu3, OrRd3
-#from bokeh.io import output_file, show
+from bokeh.palettes import GnBu3, OrRd3 #saying that something is wrong with this?
 from bokeh.layouts import column
 from bokeh.plotting import figure
 import numpy as np
 from bokeh.models import LogColorMapper
 from numpy.random import standard_normal
-from bokeh.plotting import figure, show
 from bokeh.transform import linear_cmap
 from bokeh.util.hex import hexbin
 from bokeh.layouts import gridplot
 from bokeh.layouts import row
-
-from random import random 
+#models 
+from bokeh.models import Label, PrintfTickFormatter
 from bokeh.models import CrosshairTool, Span
 
 from sklearn.neighbors import KernelDensity
-
-from bokeh.models import Label, PrintfTickFormatter
+#other 
 from bokeh.palettes import Dark2_5 as colors
 from bokeh.sampledata.cows import data as df
+from bokeh.layouts import column
+
+
+
+
+
+import numpy as np
+import holoviews as hv
+from holoviews import opts
+
+hv.extension('bokeh')
+
+#data 
+df_rain = pd.read_csv('\BokehDjango\scicomms-gallery\BokehDjango\data\weatherAUS.csv')
+df_rain = 
 
 
 
 
 def home(request):
-
-#figure 1 
-        def normal2d(X,Y, sigx=1.0, sigy=1.0, mux=0.0, muy=0.0):
-                        z = (X-mux**2 + (Y-muy **2 / sigy**2))
-                        return np.exp(-z/2) / 92*np.pi * sigx * sigy)
-        X,Y = np.mgrid[-3:3:200j, -2:2:200j]
-        Z = normal2d(X,Y,0.1,0.2,1.0,1.0)+ 0.1*normal2d(X,Y,1.0,1.0)
-        image = Z * 1e6
-        color_mapper = LogColorMapper(palette="Viridis256", low=1, high=1e7)
-        s1 =figure(x_range(0,1), y_range=(0,1), toolbar_location=None)
-        r = s1.image(image=[image], color_mapper=color_mapper, dh=1.0, dw=1.0, x=0,y=0)
-        color_bar = r.construct_color_bar(padding=2)
-        s1.add_layout(color_bar, "right")
 
 #figure 2 
 
@@ -98,7 +63,7 @@ def home(request):
         width = Span(dimension="width", line_dash="dashed", line_width=2)
         height = Span(dimension='height', line_dash='dotted', line_width=2)
 
-        s2 = figure(height=400, height=400, x_range=(0,15), y_range=(0,15), tools="hover", toolbar_location="None")
+        s2 = figure(height=400, width=400, x_range=(0,15), y_range=(0,15), tools="hover", toolbar_location=None)
         s2.add_tools(CrosshairTool(overlay=[width, height]))
         s2.circle(x,y,radius=0.2, alpha=0.3, hover_alpha=1.0)
 
@@ -123,7 +88,7 @@ def home(request):
                 "2017" : [-1,-4,0,-2,-1]
         }
 
-        s5 = figure(y_range=fruits, height=350, x_range=(-15,15), title="Fruit import/export by year", toolbar_location=None)
+        s5 = figure(y_range=fruits, height=400, x_range=(-15,15), title="Fruit import/export by year", toolbar_location=None)
         s5.hbar_stack(years, y="fruits", height=0.9, color=OrRd3, source=ColumnDataSource(exports), 
                 legend_label=['f {year} imports' for year in years])
         s5.hbar_stack(years, y="fruits", height=0.9, color=OrRd3, source=ColumnDataSource(imports), 
@@ -135,9 +100,40 @@ def home(request):
         s5.outline_line_color = None
 
 
+        source = ColumnDataSource(df_rain)
+        s6 = figure(height=400, width=400,x_range='Sunshine',y_range='Rainfall[mm]', toolbar_location='above', toolbar_sticky=False)
+        s6.circle(x="Sunshine", y="Rainfall",
+                  source=source, color='F7999',)
+        s6.title.text_font_size = '20pt'
+        s6.title.text_font_style = 'bold'
+        s6.title.text_font = 'Serif'
+        s6.xaxis.axis_label_text_font_size = '16pt'
+        s6.yaxis.axis_label_text_font_size = '16pt'
+#row 2 
+               
+
+
+
+#row3
+
+
+        #grid1 = gridplot([[s1,s4,s5], [s6, s7]])
+        #script, div = components(grid)
+        grid1 = gridplot([[s4,s5, s6]])
+        script, div = components(grid1)
+
+        context = {
+                'script': script,
+                'div': div
+        }
+
+        return render(request, 'base.html', context=context)
+
+
+
 
 #row2   
-        classes = list(sorted(df['class'].unique()))
+'''     classes = list(sorted(df['class'].unique()))
         s6 = figure(height=400, x_range=classes, background_fill_color='#efefef', 
                     title="Car class vs HWY mpg with quantile ranges")
         s6.xgrid.grid_line_color = None
@@ -184,44 +180,22 @@ def home(request):
                         y_offset=-5,
                         text_color=color,
 
-                )
-        
-
+                )'''
+      
 #row3
+    
+'''xvals = [0.1* i for i in range(100)]
+        curve =  hv.Curve((xvals, [np.sin(x) for x in xvals]))
+        scatter =  hv.Scatter((xvals[::5], np.linspace(0,1,20)))
+        scatter1 =  hv.Scatter((xvals[::5], np.linspace(0,1,20)))
+
+        from holoviews.plotting.links import DataLink
+
+        scatter1 = hv.Scatter(np.arange(100))
+        scatter2 = hv.Scatter(np.arange(100)[::-1], 'x2', 'y2')
+
+        dlink = DataLink(scatter1, scatter2)
+
+        (scatter1 + scatter2).opts(
+                 opts.Scatter(tools=['box_select', 'lasso_select']))'''
    
-#
-       # s7 = figure(width=250, height=250, background_fill_color="#fafafa")
-      #  s7.circle(x, y0, size=12, color="#53777a", alpha=0.8)
-
-        #s8 = figure(width=250, height=250, background_fill_color="#fafafa")
-        #s8.triangle(x, y1, size=12, color="#c02942", alpha=0.8)
-
-       # s9 = figure(width=250, height=250, background_fill_color="#fafafa")
-      #  s9.square(x, y2, size=12, color="#d95b43", alpha=0.8)
-
-       # grid = gridplot([s1,s2,s3,s4,s5,s6,s7,s8,s9])
-        #grid = show(gridplot([s1,s2,s3]))
-        grid1 = gridplot([[s1,s4,s5], [s6, s7]])
-        #script, div = components(grid)
-        script, div = components(grid1)
-
-   
-        #div1 = script
-
-
-        # put the results in a row and show
-       # show(row(s1, s2, s3))
-       
-        #plots_1 = row(s1,s2,s3)
-        #plots_2 = row(s4,s5,s6) 
-        #plots_3 = row(s7,s8,s9)
-        #script, div = components(plots_1,plots_2, plots_3)
-        ##div1 = plots_1
-        #div2 = plots_2
-        #div3 = plots_3
-        context = {
-                'script': script,
-                'div': div
-        }
-
-        return render(request, 'base.html', context=context)
