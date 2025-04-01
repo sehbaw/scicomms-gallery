@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-37rdyq6w$o$w+k&s5nqpsrjiv=)8e!j5$xn2s5_-i$%asq%1d_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'vercel.app']
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
 
 
 # Application definition
@@ -84,6 +84,7 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
 
 
 # Password validation

@@ -17,3 +17,5 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "BokehDjango.settings")
 
 app = get_wsgi_application()
 
+WSGI_APPLICATION = 'api.wsgi.app'
+
